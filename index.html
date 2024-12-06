@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Map with Points, Polyline, Polygon, and Feature Layer with Popups</title>
+  <title>Map with EDU and Airports Layers</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="" />
@@ -53,7 +53,26 @@
         popupTemplate: popupEduusa // Add the popup template
       });
 
-      map.add(usaeduLayer); // Add the feature layer to the map
+      map.add(usaeduLayer); // Add the EDU feature layer to the map
+
+      // Add the US Airports feature layer
+      const popupAirports = {
+        title: "Airport Details",
+        content: `
+          <b>Name:</b> {NAME}<br>
+          <b>City:</b> {CITY}<br>
+          <b>State:</b> {STATE}<br>
+          <b>Type:</b> {TYPE}<br>
+        `
+      };
+
+      const airportsLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airpo/FeatureServer",
+        outFields: ["NAME", "CITY", "STATE", "TYPE"], // Specify fields to retrieve
+        popupTemplate: popupAirports // Add the popup template
+      });
+
+      map.add(airportsLayer); // Add the Airports feature layer to the map
 
       // Add a graphics layer for custom graphics (point, polyline, polygon)
       const graphicsLayer = new GraphicsLayer();  
