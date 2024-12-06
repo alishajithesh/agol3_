@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Map with Point, Polygon, and Polyline (All Purple)</title>
+  <title>Map with Points, Polyline, Polygon, and Feature Layer with Popups</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="" />
@@ -16,11 +16,12 @@
       "esri/Map",
       "esri/views/MapView",
       "esri/Graphic",
-      "esri/layers/GraphicsLayer"
-    ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer) {
+      "esri/layers/GraphicsLayer",
+      "esri/layers/FeatureLayer" // Import FeatureLayer module
+    ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer, FeatureLayer) {
 
       // Set your ArcGIS API key
-      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurJAjpmUTTy7W5MCrEwxmdC9gj5pL2Is8nXls7pQcdVY1sIZ18jeQ1hXaV5qXrvcVZjXw5nl7PwSEdx_aMBYDFxLXsGOqhSrXNvBdyNY8Q3k2GKsK9zFBrn4chgv8TN4WCVnNAck3_bu5sjbUlm5snmzokznIXu5ogZEDnTlyi4-LUIye6vH8CNTJ3aia3dbeDSOnzthvDp9QrYDHCfSRVVQ.AT1_GDuDhePS";
+      esriConfig.apiKey = "AAPK2cb19acc98eb406b80346e85af5aa1ffagWp07_WJVQlFAY2XL6xGrQ86USz9K6UzB1OaBd37PTIlYdHTo04S0-F9ETbr-dC";
 
       // Create a map
       const map = new Map({
@@ -35,7 +36,26 @@
         container: "viewDiv" // Div element
       });
 
-      // Create a graphics layer
+      // Add the Colleges and Universities feature layer with enhanced popup
+      const popupEduusa = {
+        title: "Institution Details",
+        content: `
+          <b>Name:</b> {INSTNM}<br>
+          <b>Total Enrollment:</b> {TOT_ENROLL}<br>
+          <b>City:</b> {CITY}<br>
+          <b>Website:</b> <a href="{WEBADDR}" target="_blank">{WEBADDR}</a><br>
+        `
+      };
+
+      const usaeduLayer = new FeatureLayer({
+        url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer",
+        outFields: ["INSTNM", "TOT_ENROLL", "CITY", "WEBADDR"], // Specify the fields to retrieve
+        popupTemplate: popupEduusa // Add the popup template
+      });
+
+      map.add(usaeduLayer); // Add the feature layer to the map
+
+      // Add a graphics layer for custom graphics (point, polyline, polygon)
       const graphicsLayer = new GraphicsLayer();  
       map.add(graphicsLayer);
 
@@ -44,16 +64,6 @@
         type: "point",
         longitude: -97.750689, // Longitude
         latitude: 30.263098    // Latitude
-      };
-
-      const popupTemplate = {
-        title: "{Name}",
-        content: "{Description}"
-      };
-
-      const attributes = {
-        Name: "Stevie Ray Vaughan Statue",
-        Description: "A bronze sculpture of Stevie Ray Vaughan by Ralph Helmick"
       };
 
       const simpleMarkerSymbol = {
@@ -68,9 +78,7 @@
 
       const pointGraphic = new Graphic({
         geometry: point,
-        symbol: simpleMarkerSymbol,
-        attributes: attributes,
-        popupTemplate: popupTemplate
+        symbol: simpleMarkerSymbol
       });
 
       graphicsLayer.add(pointGraphic);
