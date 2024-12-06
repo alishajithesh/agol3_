@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Map with EDU and Airports Layers</title>
+  <title>Map with Airports and Heliports</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="" />
@@ -15,10 +15,8 @@
       "esri/config",
       "esri/Map",
       "esri/views/MapView",
-      "esri/Graphic",
-      "esri/layers/GraphicsLayer",
       "esri/layers/FeatureLayer" // Import FeatureLayer module
-    ], function (esriConfig, Map, MapView, Graphic, GraphicsLayer, FeatureLayer) {
+    ], function (esriConfig, Map, MapView, FeatureLayer) {
 
       // Set your ArcGIS API key
       esriConfig.apiKey = "AAPK2cb19acc98eb406b80346e85af5aa1ffagWp07_WJVQlFAY2XL6xGrQ86USz9K6UzB1OaBd37PTIlYdHTo04S0-F9ETbr-dC";
@@ -36,134 +34,106 @@
         container: "viewDiv" // Div element
       });
 
-      // Renderer for the airport feature layer using a custom icon from GitHub
+      // Renderer for airport icons
       const airportRenderer = {
         type: "simple",
         symbol: {
           type: "picture-marker",
-          url: "https://raw.githubusercontent.com/alishajithesh/agol3_/main/local_airport_24dp_5F6368.png", // Corrected GitHub raw URL
+          url: "https://raw.githubusercontent.com/alishajithesh/agol3_/main/local_airport_24dp_5F6368.png", // Airport icon
           width: "18px",
           height: "18px"
         }
       };
 
-      // Add the US Airports feature layer with the custom renderer
-      const popupAirports = {
-        title: "Airport Details",
-        content: `
-          <b>Name:</b> {ARPT_NAME}<br>
-          <b>City:</b> {CITY}<br>
-          <b>State:</b> {STATE}<br>
-          <b>Type:</b> {USE}<br>
-        `
+      // Labels for airports
+      const airportLabels = {
+        symbol: {
+          type: "text",
+          color: "#FFFFFF",
+          haloColor: "#5E8D74",
+          haloSize: "2px",
+          font: {
+            size: "12px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "normal"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.Fac_Name" // Label the airports with their names
+        }
       };
 
+      // Add the Airports feature layer
       const airportsLayer = new FeatureLayer({
         url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airpo/FeatureServer",
-        outFields: ["ARPT_NAME", "CITY", "STATE", "USE"], // Correct field names for airports
-        popupTemplate: popupAirports, // Add the popup template
-        renderer: airportRenderer // Apply the custom renderer
+        renderer: airportRenderer, // Apply the custom renderer
+        definitionExpression: "Fac_Type = 'AIRPORT'", // Filter for airports only
+        labelingInfo: [airportLabels], // Add labels to airports
+        outFields: ["Fac_Name", "City", "State", "Fac_Type"], // Correct field names
+        popupTemplate: {
+          title: "Airport Details",
+          content: `
+            <b>Name:</b> {Fac_Name}<br>
+            <b>City:</b> {City}<br>
+            <b>State:</b> {State}<br>
+            <b>Type:</b> {Fac_Type}<br>
+          `
+        }
       });
 
       map.add(airportsLayer); // Add the Airports feature layer to the map
 
-      // Add the Colleges and Universities feature layer
-      const popupEduusa = {
-        title: "Institution Details",
-        content: `
-          <b>Name:</b> {INSTNM}<br>
-          <b>Total Enrollment:</b> {TOT_ENROLL}<br>
-          <b>City:</b> {CITY}<br>
-          <b>Website:</b> <a href="{WEBADDR}" target="_blank">{WEBADDR}</a><br>
-        `
-      };
-
-      const usaeduLayer = new FeatureLayer({
-        url: "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Colleges_and_Universities_View/FeatureServer",
-        outFields: ["INSTNM", "TOT_ENROLL", "CITY", "WEBADDR"], // Correct field names for EDU
-        popupTemplate: popupEduusa // Add the popup template
-      });
-
-      map.add(usaeduLayer); // Add the EDU feature layer to the map
-
-      // Add a graphics layer for custom graphics (point, polyline, polygon)
-      const graphicsLayer = new GraphicsLayer();  
-      map.add(graphicsLayer);
-
-      // Add a purple point
-      const point = {
-        type: "point",
-        longitude: -97.750689, // Longitude
-        latitude: 30.263098    // Latitude
-      };
-
-      const simpleMarkerSymbol = {
-        type: "simple-marker",
-        style: "circle",
-        color: [128, 0, 128],  // Purple
-        outline: {
-          color: [75, 0, 130], // Darker purple outline
-          width: 1
+      // Renderer for heliport icons
+      const heliportRenderer = {
+        type: "simple",
+        symbol: {
+          type: "simple-marker",
+          color: "red", // Distinct red marker for heliports
+          size: "12px"
         }
       };
 
-      const pointGraphic = new Graphic({
-        geometry: point,
-        symbol: simpleMarkerSymbol
-      });
-
-      graphicsLayer.add(pointGraphic);
-
-      // Add a polyline (purple)
-      const polyline = {
-        type: "polyline",
-        paths: [
-          [-97.750689, 30.263098], // Starting point
-          [-97.7431, 30.2672],     // Middle point
-          [-97.735, 30.270]        // End point
-        ]
-      };
-
-      const polylineSymbol = {
-        type: "simple-line",
-        color: [148, 0, 211], // Medium purple
-        width: 3
-      };
-
-      const polylineGraphic = new Graphic({
-        geometry: polyline,
-        symbol: polylineSymbol
-      });
-
-      graphicsLayer.add(polylineGraphic);
-
-      // Add a polygon (purple)
-      const polygon = {
-        type: "polygon",
-        rings: [
-          [-97.740, 30.265], // Vertex 1
-          [-97.750, 30.265], // Vertex 2
-          [-97.750, 30.270], // Vertex 3
-          [-97.740, 30.270], // Vertex 4
-          [-97.740, 30.265]  // Close the polygon
-        ]
-      };
-
-      const polygonSymbol = {
-        type: "simple-fill",
-        color: [221, 160, 221, 0.5], // Light purple with transparency
-        outline: {
-          color: [128, 0, 128], // Purple outline
-          width: 1
+      // Labels for heliports
+      const heliportLabels = {
+        symbol: {
+          type: "text",
+          color: "#FFFFFF",
+          haloColor: "#8B0000",
+          haloSize: "2px",
+          font: {
+            size: "12px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "normal"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.Fac_Name" // Label the heliports with their names
         }
       };
 
-      const polygonGraphic = new Graphic({
-        geometry: polygon,
-        symbol: polygonSymbol
+      // Add the Heliports feature layer
+      const heliportsLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airpo/FeatureServer",
+        renderer: heliportRenderer, // Apply the custom renderer
+        definitionExpression: "Fac_Type = 'HELIPORT'", // Filter for heliports only
+        labelingInfo: [heliportLabels], // Add labels to heliports
+        outFields: ["Fac_Name", "City", "State", "Fac_Type"], // Correct field names
+        popupTemplate: {
+          title: "Heliport Details",
+          content: `
+            <b>Name:</b> {Fac_Name}<br>
+            <b>City:</b> {City}<br>
+            <b>State:</b> {State}<br>
+            <b>Type:</b> {Fac_Type}<br>
+          `
+        }
       });
 
-      graphicsLayer.add(polygonGraphic);
+      map.add(heliportsLayer); // Add the Heliports feature layer to the map
     });
   </script>
 
