@@ -36,7 +36,38 @@
         container: "viewDiv" // Div element
       });
 
-      // Add the Colleges and Universities feature layer with enhanced popup
+      // Renderer for the airport feature layer using a custom icon from GitHub
+      const airportRenderer = {
+        type: "simple",
+        symbol: {
+          type: "picture-marker",
+          url: "https://github.com/alishajithesh/agol3_/raw/main/local_airport_24dp_5F6368.png", // GitHub-hosted icon
+          width: "18px",
+          height: "18px"
+        }
+      };
+
+      // Add the US Airports feature layer with the custom renderer
+      const popupAirports = {
+        title: "Airport Details",
+        content: `
+          <b>Name:</b> {NAME}<br>
+          <b>City:</b> {CITY}<br>
+          <b>State:</b> {STATE}<br>
+          <b>Type:</b> {TYPE}<br>
+        `
+      };
+
+      const airportsLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airpo/FeatureServer",
+        outFields: ["NAME", "CITY", "STATE", "TYPE"], // Specify fields to retrieve
+        popupTemplate: popupAirports, // Add the popup template
+        renderer: airportRenderer // Apply the custom renderer
+      });
+
+      map.add(airportsLayer); // Add the Airports feature layer to the map
+
+      // Add the Colleges and Universities feature layer
       const popupEduusa = {
         title: "Institution Details",
         content: `
@@ -54,25 +85,6 @@
       });
 
       map.add(usaeduLayer); // Add the EDU feature layer to the map
-
-      // Add the US Airports feature layer
-      const popupAirports = {
-        title: "Airport Details",
-        content: `
-          <b>Name:</b> {NAME}<br>
-          <b>City:</b> {CITY}<br>
-          <b>State:</b> {STATE}<br>
-          <b>Type:</b> {TYPE}<br>
-        `
-      };
-
-      const airportsLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airpo/FeatureServer",
-        outFields: ["NAME", "CITY", "STATE", "TYPE"], // Specify fields to retrieve
-        popupTemplate: popupAirports // Add the popup template
-      });
-
-      map.add(airportsLayer); // Add the Airports feature layer to the map
 
       // Add a graphics layer for custom graphics (point, polyline, polygon)
       const graphicsLayer = new GraphicsLayer();  
