@@ -16,8 +16,10 @@
     require([
      "esri/config",
       "esri/Map",
-      "esri/views/MapView"
-    ], function (esriConfig,Map, MapView) {
+      "esri/views/MapView",
+      "esri/Graphic",
+      "esri/Layers/GraphicsLayer"
+    ], function (esriConfig,Map, MapView, Graphic, GraphicsLayer) {
 
       esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurJAjpmUTTy7W5MCrEwxmdC9gj5pL2Is8nXls7pQcdVY1sIZ18jeQ1hXaV5qXrvcVZjXw5nl7PwSEdx_aMBYDFxLXsGOqhSrXNvBdyNY8Q3k2GKsK9zFBrn4chgv8TN4WCVnNAck3_bu5sjbUlm5snmzokznIXu5ogZEDnTlyi4-LUIye6vH8CNTJ3aia3dbeDSOnzthvDp9QrYDHCfSRVVQ.AT1_GDuDhePS";
       const map = new Map({
@@ -30,6 +32,17 @@
           zoom: 13, // Zoom level
           container: "viewDiv" // Div element
         });
+
+        //Create a graphics layer
+        const graphicsLayer = new GraphicsLayer();  
+        map.add(graphicsLayer);
+
+        //Create a point 
+        const point = { //Create a point  
+          type: "point",  
+          longitude: -97.750689,    //long lat of Stevie Ray Vaughan Statue
+          latitude: 30.263098
+};
     });
   </script>
 
