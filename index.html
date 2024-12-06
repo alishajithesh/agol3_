@@ -46,9 +46,22 @@
         latitude: 30.263098   // Latitude of Stevie Ray Vaughan Statue
       };
 
-      // Create a simple marker symbol
+      // Define the popupTemplate
+      const popupTemplate = {
+        title: "{Name}",
+        content: "{Description}"
+      };
+
+      // Define attributes for the point
+      const attributes = {
+        Name: "Stevie Ray Vaughan Statue",
+        Description: "A bronze sculpture of Stevie Ray Vaughan by Ralph Helmick"
+      };
+
+      // Create a simple marker symbol with a diamond shape
       const simpleMarkerSymbol = {
         type: "simple-marker",
+        style: "diamond", // Change shape to diamond
         color: [0, 0, 139],  // Blues rock color
         outline: {
           color: [255, 255, 255], // White outline
@@ -59,7 +72,9 @@
       // Create a graphic and add it to the graphics layer
       const pointGraphic = new Graphic({
         geometry: point,
-        symbol: simpleMarkerSymbol
+        symbol: simpleMarkerSymbol,
+        attributes: attributes, // Add attributes
+        popupTemplate: popupTemplate // Add popupTemplate
       });
 
       graphicsLayer.add(pointGraphic);
