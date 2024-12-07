@@ -8,7 +8,7 @@
 
   <!-- ArcGIS API CSS and JavaScript -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
-  <script src="https://js.arcgis.com/4.25/"></script>
+  <script src="https://js.arcgis.com/4.25/"></script> 
 
   <script>
     require([
@@ -23,7 +23,7 @@
 
       // Create a map
       const map = new Map({
-        basemap: "topo" // Basemap layer
+        basemap: "topo-vector" // Basemap layer
       });
 
       // Create a map view
@@ -45,7 +45,7 @@
         }
       };
 
-      // Labels for airports
+      // Labels for airports are ...
       const airportLabels = {
         symbol: {
           type: "text",
@@ -58,6 +58,7 @@
             style: "italic",
             weight: "normal"
           }
+
         },
         labelPlacement: "above-center",
         labelExpressionInfo: {
