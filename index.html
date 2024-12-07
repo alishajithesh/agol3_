@@ -19,11 +19,11 @@
     ], function (esriConfig, Map, MapView, FeatureLayer) {
 
       // Set your ArcGIS API key
-      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurJAjpmUTTy7W5MCrEwxmdC9gj5pL2Is8nXls7pQcdVY1sIZ18jeQ1hXaV5qXrvcVZjXw5nl7PwSEdx_aMBYDFxLXsGOqhSrXNvBdyNY8Q3k2GKsK9zFBrn4chgv8TN4WCVnNAck3_bu5sjbUlm5snmzokznIXu5ogZEDnTlyi4-LUIye6vH8CNTJ3aia3dbeDSOnzthvDp9QrYDHCfSRVVQ.AT1_GDuDhePS";
+      esriConfig.apiKey = "YOUR_API_KEY_HERE";
 
-      // Create a map using the latest supported basemap
+      // Create a map using a stable basemap
       const map = new Map({
-        basemap: "topo-vector" // Replacement for deprecated "topo"
+        basemap: "streets-navigation-vector" // Universal basemap
       });
 
       // Create a map view
@@ -31,7 +31,7 @@
         map: map,
         center: [-97.7431, 30.2672], // Longitude, latitude
         zoom: 5, // Zoom level
-        container: "viewDiv" // Div element
+        container: "viewDiv"
       });
 
       // Renderer for airport icons
@@ -39,7 +39,7 @@
         type: "simple",
         symbol: {
           type: "picture-marker",
-          url: "https://raw.githubusercontent.com/alishajithesh/agol3_/main/local_airport_24dp_5F6368.png", // Airport icon
+          url: "https://raw.githubusercontent.com/alishajithesh/agol3_/main/local_airport_24dp_5F6368.png",
           width: "18px",
           height: "18px"
         }
@@ -65,9 +65,9 @@
         }
       };
 
-      // Corrected Airports FeatureLayer
+      // Airports FeatureLayer
       const airportsLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airports/FeatureServer/0", // Corrected layer URL
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airports/FeatureServer/0", // Sublayer for Airports
         renderer: airportRenderer,
         definitionExpression: "Fac_Type = 'AIRPORT'",
         labelingInfo: [airportLabels],
@@ -83,6 +83,10 @@
         }
       });
 
+      airportsLayer.load().catch((error) => {
+        console.error("Failed to load Airports layer:", error);
+      });
+
       map.add(airportsLayer);
 
       // Renderer for heliport icons
@@ -90,7 +94,7 @@
         type: "simple",
         symbol: {
           type: "simple-marker",
-          color: "red", // Distinct red marker for heliports
+          color: "red",
           size: "12px"
         }
       };
@@ -115,9 +119,9 @@
         }
       };
 
-      // Corrected Heliports FeatureLayer
+      // Heliports FeatureLayer
       const heliportsLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airports/FeatureServer/1", // Corrected layer URL
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airports/FeatureServer/1", // Sublayer for Heliports
         renderer: heliportRenderer,
         definitionExpression: "Fac_Type = 'HELIPORT'",
         labelingInfo: [heliportLabels],
@@ -131,6 +135,10 @@
             <b>Type:</b> {Fac_Type}<br>
           `
         }
+      });
+
+      heliportsLayer.load().catch((error) => {
+        console.error("Failed to load Heliports layer:", error);
       });
 
       map.add(heliportsLayer);
