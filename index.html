@@ -1,28 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Map with Airports</title>
+  <title>Map with Airports and Heliports</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="" />
 
   <!-- ArcGIS API CSS and JavaScript -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
-  <script src="https://js.arcgis.com/4.25/"></script>
+  <script src="https://js.arcgis.com/4.25/"></script> 
 
   <script>
     require([
       "esri/config",
       "esri/Map",
       "esri/views/MapView",
-      "esri/layers/FeatureLayer"
+      "esri/layers/FeatureLayer" // Import FeatureLayer module
     ], function (esriConfig, Map, MapView, FeatureLayer) {
 
       // Set your ArcGIS API key
-      esriConfig.apiKey = "YOUR_API_KEY_HERE";
+      esriConfig.apiKey = "AAPK2cb19acc98eb406b80346e85af5aa1ffagWp07_WJVQlFAY2XL6xGrQ86USz9K6UzB1OaBd37PTIlYdHTo04S0-F9ETbr-dC";
 
-      // Create a map with a stable basemap
+      // Create a map
       const map = new Map({
-        basemap: "streets-navigation-vector" // Alternative basemap
+        basemap: "topo-vector" // Basemap layer
       });
 
       // Create a map view
@@ -30,7 +31,7 @@
         map: map,
         center: [-97.7431, 30.2672], // Longitude, latitude
         zoom: 5, // Zoom level
-        container: "viewDiv"
+        container: "viewDiv" // Div element
       });
 
       // Renderer for airport icons
@@ -38,32 +39,102 @@
         type: "simple",
         symbol: {
           type: "picture-marker",
-          url: "https://raw.githubusercontent.com/alishajithesh/agol3_/main/local_airport_24dp_5F6368.png",
+          url: "https://raw.githubusercontent.com/alishajithesh/agol3_/main/local_airport_24dp_5F6368.png", // Airport icon
           width: "18px",
           height: "18px"
         }
       };
 
-      // Add Airports FeatureLayer
+      // Labels for airports are ...
+      const airportLabels = {
+        symbol: {
+          type: "text",
+          color: "#FFFFFF",
+          haloColor: "#5E8D74",
+          haloSize: "2px",
+          font: {
+            size: "12px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "normal"
+          }
+
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.Fac_Name" // Label the airports with their names
+        }
+      };
+
+      // Add the Airports feature layer
       const airportsLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Airports/FeatureServer/0", // Publicly accessible layer
-        renderer: airportRenderer,
-        outFields: ["NAME", "STATE", "USE"],
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airpo/FeatureServer",
+        renderer: airportRenderer, // Apply the custom renderer
+        definitionExpression: "Fac_Type = 'AIRPORT'", // Filter for airports only
+        labelingInfo: [airportLabels], // Add labels to airports
+        outFields: ["Fac_Name", "City", "State", "Fac_Type"], // Correct field names
         popupTemplate: {
           title: "Airport Details",
           content: `
-            <b>Name:</b> {NAME}<br>
-            <b>State:</b> {STATE}<br>
-            <b>Use:</b> {USE}<br>
+            <b>Name:</b> {Fac_Name}<br>
+            <b>City:</b> {City}<br>
+            <b>State:</b> {State}<br>
+            <b>Type:</b> {Fac_Type}<br>
           `
         }
       });
 
-      airportsLayer.load().catch((error) => {
-        console.error("Failed to load Airports layer:", error);
+      map.add(airportsLayer); // Add the Airports feature layer to the map
+
+      // Renderer for heliport icons
+      const heliportRenderer = {
+        type: "simple",
+        symbol: {
+          type: "simple-marker",
+          color: "red", // Distinct red marker for heliports
+          size: "12px"
+        }
+      };
+
+      // Labels for heliports
+      const heliportLabels = {
+        symbol: {
+          type: "text",
+          color: "#FFFFFF",
+          haloColor: "#8B0000",
+          haloSize: "2px",
+          font: {
+            size: "12px",
+            family: "Noto Sans",
+            style: "italic",
+            weight: "normal"
+          }
+        },
+        labelPlacement: "above-center",
+        labelExpressionInfo: {
+          expression: "$feature.Fac_Name" // Label the heliports with their names
+        }
+      };
+
+      // Add the Heliports feature layer
+      const heliportsLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airpo/FeatureServer",
+        renderer: heliportRenderer, // Apply the custom renderer
+        definitionExpression: "Fac_Type = 'HELIPORT'", // Filter for heliports only
+        labelingInfo: [heliportLabels], // Add labels to heliports
+        outFields: ["Fac_Name", "City", "State", "Fac_Type"], // Correct field names
+        popupTemplate: {
+          title: "Heliport Details",
+          content: `
+            <b>Name:</b> {Fac_Name}<br>
+            <b>City:</b> {City}<br>
+            <b>State:</b> {State}<br>
+            <b>Type:</b> {Fac_Type}<br>
+          `
+        }
       });
 
-      map.add(airportsLayer);
+      map.add(heliportsLayer); // Add the Heliports feature layer to the map
     });
   </script>
 
@@ -78,7 +149,9 @@
   </style>
 </head>
 <body>
+
   <!-- Div for displaying the map -->
   <div id="viewDiv"></div>
+
 </body>
 </html>
