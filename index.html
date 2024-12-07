@@ -8,22 +8,22 @@
 
   <!-- ArcGIS API CSS and JavaScript -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.25/esri/themes/light/main.css">
-  <script src="https://js.arcgis.com/4.25/"></script> 
+  <script src="https://js.arcgis.com/4.25/"></script>
 
   <script>
     require([
       "esri/config",
       "esri/Map",
       "esri/views/MapView",
-      "esri/layers/FeatureLayer" // Import FeatureLayer module
+      "esri/layers/FeatureLayer"
     ], function (esriConfig, Map, MapView, FeatureLayer) {
 
       // Set your ArcGIS API key
-      esriConfig.apiKey = "AAPK2cb19acc98eb406b80346e85af5aa1ffagWp07_WJVQlFAY2XL6xGrQ86USz9K6UzB1OaBd37PTIlYdHTo04S0-F9ETbr-dC";
+      esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurJAjpmUTTy7W5MCrEwxmdC9gj5pL2Is8nXls7pQcdVY1sIZ18jeQ1hXaV5qXrvcVZjXw5nl7PwSEdx_aMBYDFxLXsGOqhSrXNvBdyNY8Q3k2GKsK9zFBrn4chgv8TN4WCVnNAck3_bu5sjbUlm5snmzokznIXu5ogZEDnTlyi4-LUIye6vH8CNTJ3aia3dbeDSOnzthvDp9QrYDHCfSRVVQ.AT1_GDuDhePS";
 
-      // Create a map
+      // Create a map using the latest supported basemap
       const map = new Map({
-        basemap: "topo-vector" // Basemap layer
+        basemap: "topo-vector" // Replacement for deprecated "topo"
       });
 
       // Create a map view
@@ -45,7 +45,7 @@
         }
       };
 
-      // Labels for airports are ...
+      // Labels for airports
       const airportLabels = {
         symbol: {
           type: "text",
@@ -58,21 +58,20 @@
             style: "italic",
             weight: "normal"
           }
-
         },
         labelPlacement: "above-center",
         labelExpressionInfo: {
-          expression: "$feature.Fac_Name" // Label the airports with their names
+          expression: "$feature.Fac_Name"
         }
       };
 
-      // Add the Airports feature layer
+      // Corrected Airports FeatureLayer
       const airportsLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airpo/FeatureServer",
-        renderer: airportRenderer, // Apply the custom renderer
-        definitionExpression: "Fac_Type = 'AIRPORT'", // Filter for airports only
-        labelingInfo: [airportLabels], // Add labels to airports
-        outFields: ["Fac_Name", "City", "State", "Fac_Type"], // Correct field names
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airports/FeatureServer/0", // Corrected layer URL
+        renderer: airportRenderer,
+        definitionExpression: "Fac_Type = 'AIRPORT'",
+        labelingInfo: [airportLabels],
+        outFields: ["Fac_Name", "City", "State", "Fac_Type"],
         popupTemplate: {
           title: "Airport Details",
           content: `
@@ -84,7 +83,7 @@
         }
       });
 
-      map.add(airportsLayer); // Add the Airports feature layer to the map
+      map.add(airportsLayer);
 
       // Renderer for heliport icons
       const heliportRenderer = {
@@ -112,17 +111,17 @@
         },
         labelPlacement: "above-center",
         labelExpressionInfo: {
-          expression: "$feature.Fac_Name" // Label the heliports with their names
+          expression: "$feature.Fac_Name"
         }
       };
 
-      // Add the Heliports feature layer
+      // Corrected Heliports FeatureLayer
       const heliportsLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airpo/FeatureServer",
-        renderer: heliportRenderer, // Apply the custom renderer
-        definitionExpression: "Fac_Type = 'HELIPORT'", // Filter for heliports only
-        labelingInfo: [heliportLabels], // Add labels to heliports
-        outFields: ["Fac_Name", "City", "State", "Fac_Type"], // Correct field names
+        url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/US_Airports/FeatureServer/1", // Corrected layer URL
+        renderer: heliportRenderer,
+        definitionExpression: "Fac_Type = 'HELIPORT'",
+        labelingInfo: [heliportLabels],
+        outFields: ["Fac_Name", "City", "State", "Fac_Type"],
         popupTemplate: {
           title: "Heliport Details",
           content: `
@@ -134,7 +133,7 @@
         }
       });
 
-      map.add(heliportsLayer); // Add the Heliports feature layer to the map
+      map.add(heliportsLayer);
     });
   </script>
 
